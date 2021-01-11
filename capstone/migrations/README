@@ -2,3 +2,4 @@ Generic single-database configuration.
 * URL where the application is hosted:
 	https://capstone-api-heroku.herokuapp.com
 * Instructions to set up authentication:
+This can be found in the comments of the project submission. 
