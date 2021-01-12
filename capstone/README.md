@@ -1,8 +1,9 @@
 # Casting Agency
 
 ## Introduction
-Casting Agency app.
+This is the capstone project for Udacity's full-stack developer Nanodegree to apply all the concept, knowledge and skill gained through the FSND.
 
+Now that technolgoy has evloved having a website is extremely important, as important as having an office or a shop, The Casting Agency app models a company that is responsible for creating movies and managing and assigning actors to those movies. This is a system to simplify and streamline the process. 
 ## Getting Started
 ### Base URL
 You can run the app locally or in Heroku:
