@@ -2,6 +2,7 @@
 File:           test_app.py
 Created on:     01/01/2021, 19:02
 """
+import os
 import unittest
 from unittest import mock
 import json
@@ -64,7 +65,7 @@ class CapstoneUnitTest(unittest.TestCase):
             response = self.client().post(
                 '/movies',
                 headers={'Authorization': 'Bearer abcd'},
-                json={'title': 'Dhoom', 'release_date': '2021-01-08T20:58:29.732421'}
+                json={'title': 'Dhoom', 'release_date': '2021-01-08'}
             )
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 201)
@@ -93,7 +94,7 @@ class CapstoneUnitTest(unittest.TestCase):
         with self.app.app_context():
             movie = Movies(
                 title='Movie1',
-                release_date='2021-01-08T20:58:29.732421'
+                release_date='2021-01-08'
             )
             self.db.session.add(movie)
             self.db.session.commit()
@@ -128,7 +129,7 @@ class CapstoneUnitTest(unittest.TestCase):
         with self.app.app_context():
             movie = Movies(
                 title='Movie10',
-                release_date='2021-01-08T20:58:29.732421'
+                release_date='2021-01-08'
             )
             self.db.session.add(movie)
             self.db.session.commit()
@@ -280,6 +281,58 @@ class CapstoneUnitTest(unittest.TestCase):
             headers={'Authorization': 'Bearer abcd'}
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_add_movie_without_token(self):
+        """ Test post request to add a movie without token """
+        with self.app.app_context():
+            response = self.client().post(
+                '/movies',
+                json={'title': 'Spiderman', 'release_date': '2021-01-08'}
+            )
+        self.assertEqual(response.status_code, 401)
+
+    def test_add_movie_without_permission(self):
+        """ Test post request to add a movie without required permission """
+        # Casting Assistant don't have permission to add a movie
+        with self.app.app_context():
+            response = self.client().post(
+                '/movies',
+                headers={'Authorization': f'Bearer {os.environ.get("ASSISTANT_TOKEN")}'},
+                json={'title': 'Spiderman', 'release_date': '2021-01-08'}
+            )
+        self.assertEqual(response.status_code, 403)
+
+    def test_add_movie_with_permission(self):
+        """ Test post request to add a movie with required permission """
+        # Executive Produce have permission to add a movie
+        with self.app.app_context():
+            response = self.client().post(
+                '/movies',
+                headers={'Authorization': f'Bearer {os.environ.get("PRODUCER_TOKEN")}'},
+                json={'title': 'Spiderman', 'release_date': '2021-01-08'}
+            )
+        self.assertEqual(response.status_code, 201)
+
+    def test_add_actor_with_permission(self):
+        """ Test post request to add a movie with required permission """
+        # Casting Director have permission to add a movie
+        with self.app.app_context():
+            response = self.client().post(
+                '/actors',
+                headers={'Authorization': f'Bearer {os.environ.get("DIRECTOR_TOKEN")}'},
+                json={'name': 'minu', 'age': 26, 'gender': 'female'}
+            )
+        self.assertEqual(response.status_code, 201)
+
+    def test_get_movies_with_permission(self):
+        """ Test GET request to get movies with permission """
+        # Casting Assistant has permission to view movies
+        with self.app.app_context():
+            response = self.client().get(
+                '/movies',
+                headers={'Authorization': f'Bearer {os.environ.get("ASSISTANT_TOKEN")}'}
+            )
+        self.assertEqual(response.status_code, 200)
 
 
 if __name__ == "__main__":

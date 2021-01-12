@@ -49,7 +49,7 @@ def post_movies(payload):
 
     try:
         # Convert release date to python date object
-        release_date = datetime.datetime.fromisoformat(release_date)
+        release_date = datetime.datetime.strptime(release_date, "%Y-%m-%d")
         # Create a movie
         movie = Movies(title=title, release_date=release_date)
         movie.insert()
@@ -84,7 +84,7 @@ def update_movies(payload,movie_id):
 
     if release_date is not None:
         # Convert release date to python date object
-        release_date = datetime.datetime.fromisoformat(release_date)
+        release_date = datetime.datetime.strptime(release_date, "%Y-%m-%d")
         movie.release_date = release_date
 
     try:
@@ -128,7 +128,7 @@ def delete_movies(payload, movie_id):
 
 
 @app.route('/actors', methods=['GET'])
-@requires_auth('get:actor')
+@requires_auth('get:actors')
 def get_actors(payload):
     """ GET api to get all actors from db """
     # Convert to json data
